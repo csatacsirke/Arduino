@@ -156,7 +156,7 @@ void loop() {
   delay(1500);
   Stop();
   log("turn end");
-  return;
+  //return;
   int distance = ReadSensor(FrontSensor);
   Serial.println(distance);
 
