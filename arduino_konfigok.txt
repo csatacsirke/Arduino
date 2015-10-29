@@ -1,0 +1,16 @@
+Arduino Uno
+
+LV-MaxSonar-E2:
+---------------
+
+PV mód működik: 	7. lyuk (barna) -> GND
+					6. lyuk (piros) -> 5V
+					2. lyuk -> digital 7
+					
+BlueSMIRF:
+----------
+
+					VCC -> 5V
+					TX0 -> digital 2
+					RX1 -> digital 3
+					GND -> GND
