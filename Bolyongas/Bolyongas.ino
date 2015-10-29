@@ -17,10 +17,14 @@ const int sonarSensors[] = {8, 9, 10};
 #define RightSensor 8
 
 
+void log(const char* value) {
+  Serial.println(value);
+}
+
 //variables needed to store values
 long pulse, inches, cm;
 
-
+static bool isMoving = false;
 void InitWheels() {
 
   pinMode(10, OUTPUT);
@@ -75,6 +79,8 @@ int irany = 90;
 void Stop() {
   fwservo.write(90);
   stservo.write(90);
+
+  isMoving = false;
 }
 
 // speed: pozitiv: elöre, negativ hatra min: kb -60 max +60
@@ -89,28 +95,30 @@ void Start(int speed, int direction) {
   //int irany = 90 + int(sebesseg * sin( double(t) / 1000 / 5 * 2 * 3.14 ));
   int irany = 90 - direction;
   stservo.write(irany);  
+
+  isMoving = true;
 }
 
 void TurnForMillis(int duration) {
   static unsigned long endTime = 0;
-  static bool isTurning = false;
+  
   
   unsigned long t = millis();
-  if ( isTurning ) {
+  if ( isMoving ) {
       if( t >= endTime ) {
       Stop();
-      isTurning = false;
     } 
   } else {
     endTime = t + duration;
     Start(0, 30);
-    isTurning = true;
   }
   
   
 
   
 }
+
+unsigned long startupTime;
 
 void setup() {
 
@@ -119,32 +127,57 @@ void setup() {
 
   InitWheels();
   InitSonars();
-  srand(millis());
+  startupTime = millis();
+  srand(startupTime);
+
+  log("setup");
 }
 
 
 void loop() {
-  
+  log("loop");
+  if( millis() - startupTime > 30000 && false) {
+    // csak 30 secig fusson a program
+    Stop();
+    log("vege");
+    delay(1000);
+    return;
+  }
   //ReadAndPrintSensor(sonarSensors[0]);
   //ReadAndPrintSensor(sonarSensors[1]);
   //ReadAndPrintSensor(sonarSensors[2]);
 
-  static bool isMoving = false;
+  //static bool isMoving = false;
   
-  TurnForMillis(1500);
+  //TurnForMillis(1500);
 
-  if( isMoving ) {
-    
-  }
+  log("turn");
+  Start(0, 30); // egyhelyben forgás
+  delay(1500);
+  Stop();
+  log("turn end");
+  return;
   int distance = ReadSensor(FrontSensor);
+  Serial.println(distance);
 
   if(distance > 100 ) {
-  
+    int myRandom = rand();
+    const int maxMovingTime = 3000;
+    const int minMovingTime = 500;
+    int movingTime = minMovingTime + myRandom % (maxMovingTime - minMovingTime);
+    log("forward");
+    Start(30, 0); // elöre
+    delay(movingTime);
+    log("stop");
+    Stop();
+    delay(300);
+    return;
+  } else {
+    log("too little distance");
+    delay(300);
+    return;
   }
-  
-  
-  
-  delay(500);
+
 }
 
 
