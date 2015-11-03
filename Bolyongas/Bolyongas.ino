@@ -4,38 +4,37 @@
 //#include <ArduinoJson.h>
 #include <Servo.h>
 
-//HttpClient client;
 Servo fwservo;
-Servo stservo; 
+Servo stservo;
+Servo turret;
+ 
 
 //Digital pin 7 for reading in the pulse width from the MaxSonar device.
 //This variable is a constant because the pin will not change throughout execution of this code.
 //const int pwPin = 8; 
-const int sonarSensors[] = {8, 9, 10};
+const int sonarSensors[] = {8, 9, 3};
 #define FrontSensor 9
-#define LeftSensor 10
+#define LeftSensor 3
 #define RightSensor 8
-
-
-void log(const char* value) {
-  Serial.println(value);
-}
+#define TurretPin 5
 
 //variables needed to store values
 long pulse, inches, cm;
 
-static bool isMoving = false;
+
 void InitWheels() {
 
+  pinMode(TurretPin, OUTPUT);
   pinMode(10, OUTPUT);
   pinMode(11, OUTPUT);
-  
+
+  turret.attach(TurretPin);
   fwservo.attach(11);
   stservo.attach(10);
   
   fwservo.write(90);
   stservo.write(90);
-  
+  turret.write(90);
 }
 
 void InitSonars() {
@@ -74,13 +73,11 @@ void ReadAndPrintSensor(int pin) {
   Serial.println();
 }
 
-int irany = 90;
+//int irany = 90;
 
 void Stop() {
   fwservo.write(90);
   stservo.write(90);
-
-  isMoving = false;
 }
 
 // speed: pozitiv: elöre, negativ hatra min: kb -60 max +60
@@ -95,22 +92,22 @@ void Start(int speed, int direction) {
   //int irany = 90 + int(sebesseg * sin( double(t) / 1000 / 5 * 2 * 3.14 ));
   int irany = 90 - direction;
   stservo.write(irany);  
-
-  isMoving = true;
 }
 
 void TurnForMillis(int duration) {
   static unsigned long endTime = 0;
-  
+  static bool isTurning = false;
   
   unsigned long t = millis();
-  if ( isMoving ) {
+  if ( isTurning ) {
       if( t >= endTime ) {
       Stop();
+      isTurning = false;
     } 
   } else {
     endTime = t + duration;
     Start(0, 30);
+    isTurning = true;
   }
   
   
@@ -118,66 +115,54 @@ void TurnForMillis(int duration) {
   
 }
 
-unsigned long startupTime;
-
+long startupTime;
 void setup() {
 
   //This opens up a serial connection to shoot the results back to the PC console
   Serial.begin(9600);
-
+  startupTime = millis();
   InitWheels();
   InitSonars();
-  startupTime = millis();
-  srand(startupTime);
+  srand(millis());
 
-  log("setup");
+  turret.write(91);
 }
 
 
+
 void loop() {
-  log("loop");
-  if( millis() - startupTime > 30000 && false) {
-    // csak 30 secig fusson a program
-    Stop();
-    log("vege");
-    delay(1000);
-    return;
-  }
-  //ReadAndPrintSensor(sonarSensors[0]);
-  //ReadAndPrintSensor(sonarSensors[1]);
-  //ReadAndPrintSensor(sonarSensors[2]);
-
-  //static bool isMoving = false;
   
-  //TurnForMillis(1500);
-
-  log("turn");
-  Start(0, 30); // egyhelyben forgás
-  delay(1500);
-  Stop();
-  log("turn end");
-  //return;
-  int distance = ReadSensor(FrontSensor);
-  Serial.println(distance);
-
-  if(distance > 100 ) {
-    int myRandom = rand();
-    const int maxMovingTime = 3000;
-    const int minMovingTime = 500;
-    int movingTime = minMovingTime + myRandom % (maxMovingTime - minMovingTime);
-    log("forward");
-    Start(30, 0); // elöre
-    delay(movingTime);
-    log("stop");
+  
+  if( millis() > startupTime + 30*1000) {
+    delay(3000);
+    
+    turret.write(90);
     Stop();
-    delay(300);
-    return;
-  } else {
-    log("too little distance");
-    delay(300);
+    Serial.write("megallt");
     return;
   }
+  
+  Start(0, 30);
+  delay( rand() % 1500 );
 
+  int distance = ReadSensor(FrontSensor);
+
+  if( distance > 50 ) {
+    Start(30, 0);
+  }
+
+  
+  while(true) {
+    int dist = ReadSensor(FrontSensor);
+    if( dist < 50 ) {
+       Stop();
+       break;
+    }
+    delay( 50 );
+  }
+  
+  
+  delay(500);
 }
 
 
