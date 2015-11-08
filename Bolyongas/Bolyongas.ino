@@ -2,6 +2,7 @@
 //#include <Bridge.h>
 //#include <HttpClient.h>
 //#include <ArduinoJson.h>
+#include "TaskHandler.h"
 #include <Servo.h>
 #include "PinDef2.h"
 
