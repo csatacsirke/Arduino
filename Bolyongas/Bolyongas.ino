@@ -3,20 +3,23 @@
 //#include <HttpClient.h>
 //#include <ArduinoJson.h>
 #include <Servo.h>
+#include "PinDef2.h"
+
 
 Servo fwservo;
 Servo stservo;
 Servo turret;
- 
+
+
+ #define shutdownTime 10*1000
 
 //Digital pin 7 for reading in the pulse width from the MaxSonar device.
 //This variable is a constant because the pin will not change throughout execution of this code.
 //const int pwPin = 8; 
+
+
+
 const int sonarSensors[] = {8, 9, 3};
-#define FrontSensor 9
-#define LeftSensor 3
-#define RightSensor 8
-#define TurretPin 5
 
 //variables needed to store values
 long pulse, inches, cm;
@@ -25,12 +28,12 @@ long pulse, inches, cm;
 void InitWheels() {
 
   pinMode(TurretPin, OUTPUT);
-  pinMode(10, OUTPUT);
-  pinMode(11, OUTPUT);
+  pinMode(SteerPin, OUTPUT);
+  pinMode(ForwardPin, OUTPUT);
 
   turret.attach(TurretPin);
-  fwservo.attach(11);
-  stservo.attach(10);
+  fwservo.attach(ForwardPin);
+  stservo.attach(SteerPin);
   
   fwservo.write(90);
   stservo.write(90);
@@ -125,7 +128,7 @@ void setup() {
   InitSonars();
   srand(millis());
 
-  turret.write(91);
+  turret.write(100);
 }
 
 
@@ -133,12 +136,11 @@ void setup() {
 void loop() {
   
   
-  if( millis() > startupTime + 30*1000) {
-    delay(3000);
-    
+  if( millis() > startupTime + shutdownTime) {
     turret.write(90);
     Stop();
     Serial.write("megallt");
+    delay(3000);
     return;
   }
   
