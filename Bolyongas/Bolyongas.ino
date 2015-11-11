@@ -4,13 +4,16 @@
 //#include <ArduinoJson.h>
 #include "TaskHandler.h"
 #include <Servo.h>
-#include "PinDef2.h"
+#include "PinDef.h"
 
 
 Servo fwservo;
 Servo stservo;
 Servo turret;
 
+
+#include "TaskHandler.h"
+using namespace TaskHandler;
 
  #define shutdownTime 10*1000
 
@@ -119,7 +122,12 @@ void TurnForMillis(int duration) {
   
 }
 
+
+void Task1();
+void Task2();
+
 long startupTime;
+
 void setup() {
 
   //This opens up a serial connection to shoot the results back to the PC console
@@ -129,10 +137,20 @@ void setup() {
   InitSonars();
   srand(millis());
 
-  turret.write(100);
+  turret.write(91);
+  Task1();
 }
 
 
+
+void Task1() {
+  Start(30, 0);
+  SetTimeout(Task2, 1000);
+}
+void Task2() {
+  Stop();
+  SetTimeout(Task1, 1000);
+}
 
 void loop() {
   
@@ -144,7 +162,11 @@ void loop() {
     delay(3000);
     return;
   }
+
+  ExecuteNextTask();
   
+  
+  /*
   Start(0, 30);
   delay( rand() % 1500 );
 
@@ -166,6 +188,7 @@ void loop() {
   
   
   delay(500);
+  */
 }
 
 
