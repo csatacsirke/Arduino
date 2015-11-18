@@ -4,9 +4,9 @@
 
 /* Nagy tavolsag szenzor volt rajta. */
 
-#define FrontSensor 1
-#define LeftSensor 1
-#define RightSensor 1
+#define FrontSensor 7
+#define LeftSensor 10
+#define RightSensor 11
 #define TurretPin 8
 #define ForwardPin 5
 #define SteerPin 6
