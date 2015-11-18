@@ -58,7 +58,7 @@ namespace TaskHandler {
             Swap(RightChildIndex(current), current);
             current = RightChildIndex(current);
           }
-        } else if(RightChildIndex(current) < size ){
+        } else if(LeftChildIndex(current) < size ){
           if( StartTime(current) < LeftChild(current) ) {
             break;
           } else {

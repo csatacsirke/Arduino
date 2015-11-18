@@ -14,7 +14,7 @@ public:
       }
       
       float pulse = pulseIn(pin, HIGH);
-      int cm = (int)(pulse * 0.0172789f * 2.54f);
+      int cm = (int)(pulse * 0.0172789f);
       Serial.print("sensor: ");
       Serial.println(cm);
       buffer.Push(cm);

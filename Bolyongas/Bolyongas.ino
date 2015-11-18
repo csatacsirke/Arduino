@@ -87,7 +87,8 @@ long startupTime;
 
 void SensorTask() {
   robot.UpdateSensors();
-  SetTimeout(SensorTask, 25);
+  SetTimeout(SensorTask, 50);
+  //Serial.println("task...");
 }
 
 void ForgasTask();
@@ -98,7 +99,7 @@ void MegallasTask();
 void EloreTask() {
   int distance_cm = robot.getSensorValue_Front();
   //Serial.println(distance_cm);
-  if( distance_cm < 50 && false) {
+  if( distance_cm < 50 ) {
     SetTimeout(ForgasStartTask, 0);  
   } else {
     if( robot.GetSpeed() == 0 ) {
@@ -119,8 +120,8 @@ void ForgasEndTask() {
 }
 
 void ForgasStartTask() {
-  //robot.Start(0, (rand()%2 == 0 ? -1 : 1) * 15 + rand() % 15);
-  robot.Start(0, 30);
+  robot.Start(0, (rand()%2 == 0 ? -1 : 1) * ( 15 + rand() % 15) );
+  //robot.Start(0, 30);
   SetTimeout(ForgasEndTask, 1000 + rand() % 1500);
 }
 
@@ -146,7 +147,6 @@ void setup() {
 
 void loop() {
   
-
   if( millis() > startupTime + shutdownTime) {
     robot.StopTurret();
     robot.Stop();
@@ -156,34 +156,6 @@ void loop() {
   }
   
   ExecuteNextTask();
-  
-
-  
-  
-  
-  /*
-  Start(0, 30);
-  delay( rand() % 1500 );
-
-  int distance = ReadSensor(FrontSensor);
-
-  if( distance > 50 ) {
-    Start(30, 0);
-  }
-
-  
-  while(true) {
-    int dist = ReadSensor(FrontSensor);
-    if( dist < 50 ) {
-       Stop();
-       break;
-    }
-    delay( 50 );
-  }
-  
-  
-  delay(500);
-  */
 }
 
 

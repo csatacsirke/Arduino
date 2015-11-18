@@ -18,6 +18,7 @@ public:
     buffer[last] = value;
     last = (last+1)%size;
     length++;
+    //PrintBuffers();
   }
 
   int Pop() {
@@ -28,8 +29,18 @@ public:
     return ret;
   }
 
+  void PrintBuffers() {
+    for( int i = 0; i < size; ++i ) {
+      Serial.print(buffer[i]);
+      Serial.print("\t");
+    }
+    Serial.println();
+    
+  }
+
   int GetMedian() {
     int tempBuffer[size];
+    //PrintBuffers
     memcpy(tempBuffer, buffer, size*sizeof(int));
     qsort(tempBuffer, size, sizeof(int), compare);
     return tempBuffer[(size/2)];
