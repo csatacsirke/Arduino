@@ -12,7 +12,7 @@ Robot robot;
 #include "TaskHandler.h"
 using namespace TaskHandler;
 
- #define shutdownTime 10*1000
+ #define shutdownTime 60*1000
 
 //Digital pin 7 for reading in the pulse width from the MaxSonar device.
 //This variable is a constant because the pin will not change throughout execution of this code.
@@ -78,10 +78,57 @@ void TurnForMillis(int duration) {
 }*/
 
 
-void Task1();
+void EloreTask();
 void Task2();
+void SensorTask();
 
 long startupTime;
+
+
+void SensorTask() {
+  robot.UpdateSensors();
+  SetTimeout(SensorTask, 25);
+}
+
+void ForgasTask();
+void MegallasTask();
+
+
+
+void EloreTask() {
+  int distance_cm = robot.getSensorValue_Front();
+  //Serial.println(distance_cm);
+  if( distance_cm < 50 && false) {
+    SetTimeout(ForgasStartTask, 0);  
+  } else {
+    if( robot.GetSpeed() == 0 ) {
+      robot.Start(30, 0);  
+    }
+    SetTimeout(EloreTask, 20);  
+  }
+}
+
+void MegallasTask() {
+  robot.Stop();
+  SetTimeout(ForgasStartTask, 0);
+}
+
+void ForgasEndTask() {
+  robot.Stop();
+  SetTimeout(EloreTask, 0);
+}
+
+void ForgasStartTask() {
+  //robot.Start(0, (rand()%2 == 0 ? -1 : 1) * 15 + rand() % 15);
+  robot.Start(0, 30);
+  SetTimeout(ForgasEndTask, 1000 + rand() % 1500);
+}
+
+void Task2() {
+  //if( 
+  //robot.Stop();
+  //SetTimeout(EloreTask, 1000);
+}
 
 void setup() {
 
@@ -92,19 +139,9 @@ void setup() {
   robot.InitSonars();
   srand(millis());
 
-  robot.StartTurret(50);
-  Task1();
-}
-
-
-
-void Task1() {
-  robot.Start(30, 0);
-  SetTimeout(Task2, 1000);
-}
-void Task2() {
-  robot.Stop();
-  SetTimeout(Task1, 1000);
+  //robot.StartTurret(50);
+  EloreTask();
+  SensorTask();
 }
 
 void loop() {
