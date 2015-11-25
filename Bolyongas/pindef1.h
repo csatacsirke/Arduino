@@ -14,4 +14,6 @@
 #define ForwardZero 0
 #define SteerZero 0
 
+#define SteerMult (-1)
+
 #endif

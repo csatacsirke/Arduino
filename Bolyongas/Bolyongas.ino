@@ -4,7 +4,6 @@
 //#include <ArduinoJson.h>
 #include "TaskHandler.h"
 #include <Servo.h>
-#include "PinDef2.h"
 #include "robot.h"
 
 Robot robot;
@@ -12,12 +11,7 @@ Robot robot;
 #include "TaskHandler.h"
 using namespace TaskHandler;
 
- #define shutdownTime 10*1000
-
-//Digital pin 7 for reading in the pulse width from the MaxSonar device.
-//This variable is a constant because the pin will not change throughout execution of this code.
-//const int pwPin = 8; 
-
+ #define shutdownTime 60*1000
 
 /*
 const int sonarSensors[] = {8, 9, 3};
@@ -78,10 +72,95 @@ void TurnForMillis(int duration) {
 }*/
 
 
-void Task1();
-void Task2();
-
+void EloreTask();
+void SensorTask();
+/*void KorrekcioBalraTask();
+void KorrekcioJobbraTask();
+*/
 long startupTime;
+
+
+void SensorTask() {
+  //Serial.println("Sensor_task");
+  robot.UpdateSensors();
+  SetTimeout(SensorTask, 20);
+  //Serial.println("task...");
+}
+
+void ForgasTask();
+
+
+
+void EloreTask() {
+  Serial.println("Elore_task");
+  int dist_front = robot.getSensorValue_Front();
+  int dist_left = robot.getSensorValue_Left();
+  int dist_right = robot.getSensorValue_Right();
+  int sp = robot.GetSpeed();
+  int rot = robot.GetRotation();
+  /*
+  Serial.print("dists: ");
+  Serial.print(dist_front);
+  Serial.print(", l: ");
+  Serial.print(dist_left);
+  Serial.print(", r: ");
+  Serial.println(dist_right);
+  */
+  /*
+  Serial.print(", sp: ");
+  Serial.print(sp);
+  Serial.print(", rot: ");
+  Serial.println(rot);
+*/
+  if( dist_front < 60 ) {
+    //fal elotte
+    Serial.print("    dist small: ");
+    Serial.println(dist_front);
+    if (sp > 0) {robot.Stop();}
+    SetTimeout(ForgasStartTask, 0);  
+  } else if (sp > 0 && dist_left < 30 && dist_right > 60) {
+    //fal balra
+    Serial.println("    correction_right");
+    robot.Start(sp, 15);
+    SetTimeout(EloreTask, 20); 
+  } else if (sp > 0 && dist_right < 30 && dist_left > 60) {
+    //fal jobbra
+    Serial.println("    correction_left");
+    robot.Start(sp, -15);
+    SetTimeout(EloreTask, 20); 
+  } else {
+    //nincs akadaly
+    robot.Start(30, 0);
+    SetTimeout(EloreTask, 20);  
+  }
+}
+
+void ForgasEndTask() {
+  Serial.println("ForgasEnd_task");
+  robot.Stop();
+  SetTimeout(EloreTask, 0);
+}
+
+void ForgasStartTask() {
+  Serial.println("ForgasStart_task");
+  int dist_left = robot.getSensorValue_Left();
+  int dist_right = robot.getSensorValue_Right();
+  if (dist_left > 100) {
+    Serial.println("    to_left");
+    robot.Start(0, -20 );
+    SetTimeout(ForgasEndTask, 2000);
+  } else if (dist_right > 100) {
+    Serial.println("    to_right");
+    robot.Start(0, 20 );
+    SetTimeout(ForgasEndTask, 2000);
+  } else {
+    Serial.println("    random");
+    robot.Start(0, (rand()%2 == 0 ? -1 : 1) * 20 );
+    SetTimeout(ForgasEndTask, 2000);
+  }
+
+  
+}
 
 void setup() {
 
@@ -92,24 +171,13 @@ void setup() {
   robot.InitSonars();
   srand(millis());
 
-  robot.StartTurret(50);
-  Task1();
-}
-
-
-
-void Task1() {
-  robot.Start(30, 0);
-  SetTimeout(Task2, 1000);
-}
-void Task2() {
-  robot.Stop();
-  SetTimeout(Task1, 1000);
+  //robot.StartTurret(50);
+  EloreTask();
+  SensorTask();
 }
 
 void loop() {
   
-
   if( millis() > startupTime + shutdownTime) {
     robot.StopTurret();
     robot.Stop();
@@ -119,34 +187,6 @@ void loop() {
   }
   
   ExecuteNextTask();
-  
-
-  
-  
-  
-  /*
-  Start(0, 30);
-  delay( rand() % 1500 );
-
-  int distance = ReadSensor(FrontSensor);
-
-  if( distance > 50 ) {
-    Start(30, 0);
-  }
-
-  
-  while(true) {
-    int dist = ReadSensor(FrontSensor);
-    if( dist < 50 ) {
-       Stop();
-       break;
-    }
-    delay( 50 );
-  }
-  
-  
-  delay(500);
-  */
 }
 
 
