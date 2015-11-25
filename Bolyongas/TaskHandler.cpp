@@ -27,6 +27,9 @@ namespace TaskHandler {
       int current = size;
       tasks[current] = task;
       ++size;
+      if (size >= max_size) {
+        Serial.println("ERROR: Queue overflow! ");
+      }
       while(current != 0 && tasks[current].startTime < tasks[ParentIndex(current)].startTime ) {
         Swap(current, ParentIndex(current));
         current = ParentIndex(current);
@@ -58,7 +61,7 @@ namespace TaskHandler {
             Swap(RightChildIndex(current), current);
             current = RightChildIndex(current);
           }
-        } else if(RightChildIndex(current) < size ){
+        } else if(LeftChildIndex(current) < size ){
           if( StartTime(current) < LeftChild(current) ) {
             break;
           } else {

@@ -2,12 +2,18 @@
 
 #define _PIN_DEFINITIONS_
 
-#define FrontSensor 1
-#define LeftSensor 1
-#define RightSensor 1
+/* Nagy tavolsag szenzor volt rajta. */
+
+#define FrontSensor 7
+#define LeftSensor 10
+#define RightSensor 11
 #define TurretPin 8
 #define ForwardPin 5
 #define SteerPin 6
 
+#define ForwardZero 0
+#define SteerZero 2
+
+#define SteerMult 1
 
 #endif
