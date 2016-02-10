@@ -20,9 +20,10 @@ class Robot {
 
   Servo fwservo;
   Servo stservo;
-  Servo turret;
   int speed = 0;
   int direction = 0;
+
+  bool invulnerable = false;
 public:
 
   void InitSonars() {
@@ -34,17 +35,14 @@ public:
 
   void InitWheels() {
 
-    pinMode(TurretPin, OUTPUT);
     pinMode(SteerPin, OUTPUT);
     pinMode(ForwardPin, OUTPUT);
 
-    turret.attach(TurretPin);
     fwservo.attach(ForwardPin);
     stservo.attach(SteerPin);
 
     fwservo.write(90 + ForwardZero);
     stservo.write(90 + SteerZero);
-    turret.write(90);
   }
 
   // speed: pozitiv: elöre, negativ hatra min: kb -60 max +60
@@ -71,12 +69,6 @@ public:
   int GetSpeed() {
     return this->speed;
   }
-  void StartTurret(int speed) {
-    turret.write(90+speed);
-  }
-  void StopTurret() {
-    turret.write(90);
-  }
 
   void UpdateSensors() {
     myFrontSensor.Update();
@@ -102,10 +94,17 @@ public:
   }
 
   void setRedLedOn() {
-    redLed.setOn()
+    redLed.SetOn();
   }
   void setRedLedOff() {
-    redLed.setOff()
+    redLed.SetOff();
+  }
+
+  void setInvulnerable(bool toSet) {
+    this->invulnerable = toSet;
+  }
+  bool isInvulnerable() {
+    return this->invulnerable;
   }
 
 private:

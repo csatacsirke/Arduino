@@ -4,11 +4,6 @@
 
 /* Nagy tavolsag szenzor volt rajta. */
 
-#define RobotID 2
-
-#define bluetoothTx 0
-#define bluetoothRx 1
-
 #define FrontSensor 7
 #define LeftSensor 10
 #define RightSensor 11
