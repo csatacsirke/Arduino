@@ -87,7 +87,7 @@ void EloreTask() {
     TaskHandler::SetTimeout(EloreTask, 20); 
   } else {
     //nincs akadaly
-    robot.Start(30, 0);
+    robot.Start(18, 0);
     TaskHandler::SetTimeout(EloreTask, 20); 
   }
 }
@@ -133,6 +133,14 @@ void setup() {
 }
 
 void loop() {
+/*
+  //DEBUG
+  robot.Start(18, 0 );
+  robot.setRedLedOn();
+  delay(10000);
+  robot.setRedLedOff();
+  robot.Stop();
+  delay(5000);*/
   
   if( millis() > startupTime + shutdownTime) {
     robot.Stop();

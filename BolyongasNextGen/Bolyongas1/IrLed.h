@@ -1,6 +1,6 @@
 #include <Arduino.h>
 #include "pindef1.h"
-
+#pragma once
 #define onTime 1
 #define offTime 17
 

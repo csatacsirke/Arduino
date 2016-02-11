@@ -50,8 +50,6 @@ public:
   void Start(int speed, int direction) {
     fwservo.write(90 + speed + ForwardZero);
     int irany = 90 + SteerMult*direction;
-      //TODO iranyhoz hozzaadni SteerZero-t?
-      //TODO irany miert 90 MINUSZ dir?
     stservo.write(irany);  
     this->speed = speed;
     this->direction = direction;

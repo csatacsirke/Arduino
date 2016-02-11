@@ -9,6 +9,8 @@
 
 #define SensorBufferLen 9
 
+#pragma once
+
 class Robot {
   DistanceSensor<FrontSensor> myFrontSensor;  
   DistanceSensor<RightSensor> myRightSensor;  
@@ -23,6 +25,8 @@ class Robot {
   Servo turret;
   int speed = 0;
   int direction = 0;
+
+  bool ceaseFire = false;
 public:
 
   void InitSonars() {
@@ -58,7 +62,7 @@ public:
     this->speed = speed;
     this->direction = direction;
   }
-  void Stop() {   
+  void Stop() {
     fwservo.write(90+ForwardZero);
     stservo.write(90+SteerZero);
     this->speed = 0;
@@ -82,6 +86,13 @@ public:
     irLed.Fire(durationMsec);
   }
 
+  bool isTargetOnSight() {
+    return bluetooth.ReadOnSight();
+  }
+  bool getTargetAngle() {
+    return bluetooth.ReadAngle();
+  }
+
   void UpdateSensors() {
 
     myFrontSensor.Update();
@@ -102,6 +113,14 @@ public:
   }
   int getSensorValue_Right() {
     return myRightSensor.Read();
+  }
+
+  
+  void setCeaseFire(bool toSet) {
+    this->ceaseFire = toSet;
+  }
+  bool isCeaseFire() {
+    return this->ceaseFire;
   }
 
 

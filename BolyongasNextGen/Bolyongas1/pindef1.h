@@ -4,8 +4,8 @@
 
 /* Trojai falo. */
 
-#define bluetoothTx 0
-#define bluetoothRx 1
+#define BluetoothTx 0
+#define BluetoothRx 1
 
 #define FrontSensor 9
 #define LeftSensor 4

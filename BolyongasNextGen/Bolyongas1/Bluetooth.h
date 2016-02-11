@@ -3,8 +3,11 @@
 #include <Arduino.h>
 #include "pindef1.h"
 
+#pragma once
+
+SoftwareSerial bluetooth(BluetoothTx, BluetoothRx);
+
 class Bluetooth {
-  SoftwareSerial bluetooth(bluetoothTx,bluetoothRx);
   bool initialized = false;
 
   bool onSight = false;
@@ -24,8 +27,7 @@ public:
         initialized = true;
       }
 
-      if(bluetooth.available()>1){
-        bluetooth.write("1");
+      while (bluetooth.available()>1) {
         //startupTime=startupTime-shutdownTime;
         char robotB = bluetooth.read();
         char angleByte = bluetooth.read();
@@ -45,11 +47,13 @@ public:
           //startupTime=startupTime-shutdownTime;
           }
       }
+  }
   bool ReadOnSight() {
     return onSight;
   }
   int ReadAngle() {
     return angle;
   }
+  
 };
 
